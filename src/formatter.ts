@@ -359,18 +359,23 @@ function checkRoundTrip(
       reason: "This combination produces output that reparses with diagnostics.",
     };
   }
-  const expected = packages.map(({ name, specifiers }) => ({
-    name,
-    specifiers:
-      options.output === "tarball"
-        ? specifiers.map((specifier) => normalizeExactVersion(specifier) ?? specifier)
-        : specifiers,
-  }));
+  const expected = packages
+    .map(({ name, specifiers }) => ({
+      name,
+      specifiers:
+        options.output === "tarball"
+          ? specifiers.map((specifier) => normalizeExactVersion(specifier) ?? specifier)
+          : specifiers,
+    }));
+  const normalizedExpected =
+    options.output === "text" && options.recordSeparator === "newline"
+      ? [...expected].sort((a, b) => a.name.localeCompare(b.name))
+      : expected;
   const actual = reparsed.packages.map(({ name, specifiers }) => ({
     name,
     specifiers,
   }));
-  return JSON.stringify(actual) === JSON.stringify(expected)
+  return JSON.stringify(actual) === JSON.stringify(normalizedExpected)
     ? { supported: true }
     : {
         supported: false,
@@ -431,12 +436,18 @@ function formatText(
   packages: readonly ParsedPackage[],
   options: ResolvedFormatOptions,
 ): string {
+  const expanded =
+    options.grouping === "repeated" ? expand(packages) : packages;
+  const sorted =
+    options.recordSeparator === "newline"
+      ? [...expanded].sort((a, b) => a.name.localeCompare(b.name))
+      : expanded;
   const records =
     options.grouping === "repeated"
-      ? expand(packages).map(({ name, specifier }) =>
+      ? (sorted as ReturnType<typeof expand>).map(({ name, specifier }) =>
           formatTextRecord(name, specifier ? [specifier] : [], options),
         )
-      : packages.map(({ name, specifiers }) =>
+      : (sorted as ParsedPackage[]).map(({ name, specifiers }) =>
           formatTextRecord(name, specifiers, options),
         );
   return records.join(options.recordSeparator === "space" ? " " : "\n");
