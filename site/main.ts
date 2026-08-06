@@ -166,21 +166,73 @@ function updateControlVisibility(options: FormatOptions): void {
 }
 
 function normalizeControls(packages: ParseResult["packages"]): void {
-  const base = getFormatOptions();
-  const compatibility = getFormatCompatibility(packages, base);
+  const options = getFormatOptions();
 
-  if (!compatibility.supported) {
-    applyFormatOptions({
-      ...base,
-      output: "json",
-      grouping: "consolidated",
-    });
+  // Progressively fix incompatible options rather than jumping straight to JSON.
+  // Each step adjusts one option and re-checks compatibility.
+  const fixed = autoFixOptions(packages, options);
+  if (fixed !== options) applyFormatOptions(fixed);
+
+  formatNote.hidden = true;
+}
+
+function autoFixOptions(
+  packages: ParseResult["packages"],
+  options: FormatOptions,
+): FormatOptions {
+  // Try the options as-is first.
+  if (getFormatCompatibility(packages, options).supported) return options;
+
+  // text/columns: force specifierSeparator to "space".
+  if (
+    options.output === "text" &&
+    options.textStyle === "columns" &&
+    options.specifierSeparator !== "space"
+  ) {
+    const fixed = { ...options, specifierSeparator: "space" as const };
+    if (getFormatCompatibility(packages, fixed).supported) return fixed;
+    return autoFixOptions(packages, fixed);
   }
 
-  formatNote.hidden = compatibility.supported;
-  formatNote.textContent = compatibility.supported
-    ? ""
-    : `${compatibility.reason ?? "Unsupported combination"} Switched to JSON.`;
+  // text/columns: force recordSeparator to "newline".
+  if (
+    options.output === "text" &&
+    options.textStyle === "columns" &&
+    options.recordSeparator !== "newline"
+  ) {
+    const fixed = { ...options, recordSeparator: "newline" as const };
+    if (getFormatCompatibility(packages, fixed).supported) return fixed;
+    return autoFixOptions(packages, fixed);
+  }
+
+  // text/columns: data contains quotes or newlines — fall back to "attached" style.
+  if (options.output === "text" && options.textStyle === "columns") {
+    const fixed = { ...options, textStyle: "attached" as const };
+    if (getFormatCompatibility(packages, fixed).supported) return fixed;
+    return autoFixOptions(packages, fixed);
+  }
+
+  // text/attached or remaining text issues — switch to JSON.
+  if (options.output === "text") {
+    const fixed = { ...options, output: "json" as const, grouping: "consolidated" as const };
+    if (getFormatCompatibility(packages, fixed).supported) return fixed;
+    return autoFixOptions(packages, fixed);
+  }
+
+  // csv/markdown with commas — switch to JSON.
+  if (options.output === "csv" || options.output === "markdown") {
+    const fixed = { ...options, output: "json" as const, grouping: "consolidated" as const };
+    if (getFormatCompatibility(packages, fixed).supported) return fixed;
+    return autoFixOptions(packages, fixed);
+  }
+
+  // tarball issues — switch to JSON.
+  if (options.output === "tarball") {
+    return { ...options, output: "json" as const, grouping: "consolidated" as const };
+  }
+
+  // Last resort.
+  return { ...options, output: "json" as const, grouping: "consolidated" as const };
 }
 
 function applyFormatOptions(options: FormatOptions): void {
