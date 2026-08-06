@@ -61,9 +61,9 @@ test("formats newline and space variants", () => {
   assert.equal(
     format(packages, "newline-consolidated"),
     [
-      'react@"18.3.1,^19.0.0"',
-      "lodash",
       "@scope/pkg@2.0.0",
+      "lodash",
+      'react@"18.3.1,^19.0.0"',
     ].join("\n"),
   );
   assert.equal(
@@ -109,6 +109,7 @@ test("rejects ambiguous space-separated package-first records", () => {
 });
 
 test("round trips normalized data through newline and space presets", () => {
+  const sortedPackages = [...packages].sort((a, b) => a.name.localeCompare(b.name));
   for (const preset of [
     "newline-consolidated",
     "newline-repeated",
@@ -116,9 +117,10 @@ test("round trips normalized data through newline and space presets", () => {
     "space-repeated",
   ]) {
     const reparsed = parse(format(packages, preset));
+    const isNewline = preset.startsWith("newline");
     assert.deepEqual(
       reparsed.packages.map(({ name, specifiers }) => ({ name, specifiers })),
-      packages.map(({ name, specifiers }) => ({ name, specifiers })),
+      (isNewline ? sortedPackages : packages).map(({ name, specifiers }) => ({ name, specifiers })),
       preset,
     );
   }
@@ -224,7 +226,7 @@ test("formats every package as a bare name in names-only mode", () => {
         packageOnly: false,
       },
     }),
-    "react\nlodash",
+    "lodash\nreact",
   );
 });
 
@@ -289,7 +291,9 @@ test("round trips every supported formatter permutation", () => {
                     name,
                     specifiers,
                   })),
-                  expected,
+                  output === "text" && recordSeparator === "newline"
+                    ? [...expected].sort((a, b) => a.name.localeCompare(b.name))
+                    : expected,
                   JSON.stringify(options),
                 );
               }
