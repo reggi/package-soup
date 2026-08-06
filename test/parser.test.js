@@ -181,16 +181,16 @@ test("parses quoted CSV fields without adding a trailing empty field", () => {
 test("parses npm inventory CSV by header names and skips non-npm rows", () => {
   const input = [
     "Detected,Version,Name,Namespace,Ecosystem,Artifact",
-    "2026-08-04T09:41:25.543Z,6.0.0,reggi,,npm,",
-    "2026-08-04T09:44:25.577Z,1.6.2,docs-viewer,@reggi,npm,",
-    "2026-08-04T09:44:25.577Z,2.0.0,requests,,pypi,",
+    "2024-01-15T09:41:25.543Z,6.0.0,sample-cli,,npm,",
+    "2024-01-15T09:44:25.577Z,1.6.2,docs-kit,@example,npm,",
+    "2024-01-15T09:44:25.577Z,2.0.0,sample-python,,pypi,",
   ].join("\r\n");
 
   const result = parse(input);
 
   assert.deepEqual(compact(result), [
-    { name: "reggi", specifiers: ["6.0.0"] },
-    { name: "@reggi/docs-viewer", specifiers: ["1.6.2"] },
+    { name: "sample-cli", specifiers: ["6.0.0"] },
+    { name: "@example/docs-kit", specifiers: ["1.6.2"] },
   ]);
   assert.deepEqual(result.diagnostics, []);
 });
@@ -340,6 +340,42 @@ test("is synchronous and does not call fetch", () => {
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test("associates semver versions after a scoped package name on the same line", () => {
+  const input = [
+    "npm",
+    "@example/tool-linux-musl-x64 1.0.74",
+    "2024-01-15 09:12:03 UTC\t2024-01-15 09:17:14 UTC",
+    "npm",
+    "@example/tool-win32-x64 1.0.74",
+    "2024-01-15 09:11:59 UTC\t2024-01-15 09:17:11 UTC",
+    "@example/tool-linux-x64 1.0.74",
+    "@example/tool-darwin-arm64 1.0.74",
+  ].join("\n");
+
+  const result = parse(input);
+
+  assert.deepEqual(
+    result.packages
+      .filter((p) => p.name.startsWith("@example/"))
+      .map(({ name, specifiers }) => ({ name, specifiers })),
+    [
+      { name: "@example/tool-linux-musl-x64", specifiers: ["1.0.74"] },
+      { name: "@example/tool-win32-x64", specifiers: ["1.0.74"] },
+      { name: "@example/tool-linux-x64", specifiers: ["1.0.74"] },
+      { name: "@example/tool-darwin-arm64", specifiers: ["1.0.74"] },
+    ],
+  );
+});
+
+test("associates multiple semver versions after an unscoped package name", () => {
+  const result = parse("sample-tool 4.17.21 4.17.20");
+
+  assert.deepEqual(compact(result), [
+    { name: "sample-tool", specifiers: ["4.17.21", "4.17.20"] },
+  ]);
+  assert.equal(result.atoms[0].type, "specifier-list");
 });
 
 test("handles large adversarial input without recursive parsing", () => {
