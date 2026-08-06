@@ -1,6 +1,6 @@
 {
   "name": "package-soup",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Synchronously extract and format npm package specifiers from mixed text.",
   "type": "module",
   "main": "./dist/index.js",
