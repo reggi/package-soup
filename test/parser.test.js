@@ -342,6 +342,42 @@ test("is synchronous and does not call fetch", () => {
   }
 });
 
+test("associates semver versions after a scoped package name on the same line", () => {
+  const input = [
+    "npm",
+    "@xxx/cli-linux-musl-x64 1.0.74",
+    "2026-08-04 13:18:41 UTC\t2026-08-04 13:23:52 UTC",
+    "npm",
+    "@xxx/cli-win32-x64 1.0.74",
+    "2026-08-04 13:18:37 UTC\t2026-08-04 13:23:49 UTC",
+    "@xxx/cli-linux-x64 1.0.74",
+    "@xxx/cli-darwin-arm64 1.0.74",
+  ].join("\n");
+
+  const result = parse(input);
+
+  assert.deepEqual(
+    result.packages
+      .filter((p) => p.name.startsWith("@xxx/"))
+      .map(({ name, specifiers }) => ({ name, specifiers })),
+    [
+      { name: "@xxx/cli-linux-musl-x64", specifiers: ["1.0.74"] },
+      { name: "@xxx/cli-win32-x64", specifiers: ["1.0.74"] },
+      { name: "@xxx/cli-linux-x64", specifiers: ["1.0.74"] },
+      { name: "@xxx/cli-darwin-arm64", specifiers: ["1.0.74"] },
+    ],
+  );
+});
+
+test("associates multiple semver versions after an unscoped package name", () => {
+  const result = parse("lodash 4.17.21 4.17.20");
+
+  assert.deepEqual(compact(result), [
+    { name: "lodash", specifiers: ["4.17.21", "4.17.20"] },
+  ]);
+  assert.equal(result.atoms[0].type, "specifier-list");
+});
+
 test("handles large adversarial input without recursive parsing", () => {
   const input = Array.from(
     { length: 5_000 },

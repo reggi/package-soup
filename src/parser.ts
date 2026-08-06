@@ -454,7 +454,8 @@ function parseLine(state: ParseState, line: SourceLine): void {
   if (
     tokens &&
     tokens.length > 1 &&
-    tokens.every((token) => probeAtomic(state, token, true) !== undefined)
+    tokens.every((token) => probeAtomic(state, token, true) !== undefined) &&
+    !isPackageFollowedByVersions(state, tokens)
   ) {
     parseTokenSequence(state, tokens);
     return;
@@ -584,6 +585,18 @@ function addInvalidTokenDiagnostic(
     "Token does not match a supported npm package reference.",
     token,
   );
+}
+
+function isPackageFollowedByVersions(state: ParseState, tokens: SourceSpan[]): boolean {
+  if (tokens.length < 2) return false;
+  const first = tokens[0];
+  if (!first) return false;
+  const firstAtom = probeAtomic(state, first, true);
+  if (!firstAtom || firstAtom.type !== "package") return false;
+  return tokens.slice(1).every((token) => {
+    const type = classifySpecifier(token.text);
+    return type === "exact-version" || type === "semver-range";
+  });
 }
 
 function isExplicitAtom(
