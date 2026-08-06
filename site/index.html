@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Parse mixed npm package references and format them without sending data anywhere."
+    />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgd2lkdGg9IjI1NiIKICBoZWlnaHQ9IjI1NiIKICB2aWV3Qm94PSIwIDAgMzIgMzIiCiAgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj4KCiAgPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iMyIgZmlsbD0iI0U4RjhDNiIvPgoKICA8IS0tIHN0ZWFtIC0tPgogIDxyZWN0IHg9IjEwIiB5PSIzIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjNTI2NDNGIi8+CiAgPHJlY3QgeD0iOSIgeT0iNSIgd2lkdGg9IjMiIGhlaWdodD0iMiIgZmlsbD0iIzUyNjQzRiIvPgogIDxyZWN0IHg9IjEwIiB5PSI3IiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjRDNGRjc1Ii8+CgogIDxyZWN0IHg9IjE1IiB5PSIxIiB3aWR0aD0iMiIgaGVpZ2h0PSIyIiBmaWxsPSIjRDNGRjc1Ii8+CiAgPHJlY3QgeD0iMTQiIHk9IjMiIHdpZHRoPSIzIiBoZWlnaHQ9IjIiIGZpbGw9IiNEM0ZGNzUiLz4KICA8cmVjdCB4PSIxNSIgeT0iNSIgd2lkdGg9IjIiIGhlaWdodD0iMyIgZmlsbD0iIzUyNjQzRiIvPgoKICA8cmVjdCB4PSIyMCIgeT0iNCIgd2lkdGg9IjIiIGhlaWdodD0iMiIgZmlsbD0iIzUyNjQzRiIvPgogIDxyZWN0IHg9IjE5IiB5PSI2IiB3aWR0aD0iMyIgaGVpZ2h0PSIyIiBmaWxsPSIjRDNGRjc1Ii8+CiAgPHJlY3QgeD0iMjAiIHk9IjgiIHdpZHRoPSIyIiBoZWlnaHQ9IjEiIGZpbGw9IiM1MjY0M0YiLz4KCiAgPCEtLSBoYW5kbGVzIC0tPgogIDxyZWN0IHg9IjMiIHk9IjEzIiB3aWR0aD0iMyIgaGVpZ2h0PSIyIiBmaWxsPSIjMTUxRDE3Ii8+CiAgPHJlY3QgeD0iMiIgeT0iMTUiIHdpZHRoPSIyIiBoZWlnaHQ9IjQiIGZpbGw9IiMxNTFEMTciLz4KICA8cmVjdCB4PSIzIiB5PSIxOSIgd2lkdGg9IjMiIGhlaWdodD0iMiIgZmlsbD0iIzE1MUQxNyIvPgoKICA8cmVjdCB4PSIyNiIgeT0iMTMiIHdpZHRoPSIzIiBoZWlnaHQ9IjIiIGZpbGw9IiMxNTFEMTciLz4KICA8cmVjdCB4PSIyOCIgeT0iMTUiIHdpZHRoPSIyIiBoZWlnaHQ9IjQiIGZpbGw9IiMxNTFEMTciLz4KICA8cmVjdCB4PSIyNiIgeT0iMTkiIHdpZHRoPSIzIiBoZWlnaHQ9IjIiIGZpbGw9IiMxNTFEMTciLz4KCiAgPCEtLSBvdXRlciByaW0gLS0+CiAgPHJlY3QgeD0iOCIgeT0iOSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjEiIGZpbGw9IiMxNTFEMTciLz4KICA8cmVjdCB4PSI2IiB5PSIxMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIiIGZpbGw9IiMxNTFEMTciLz4KICA8cmVjdCB4PSI1IiB5PSIxMiIgd2lkdGg9IjIyIiBoZWlnaHQ9IjQiIGZpbGw9IiMxNTFEMTciLz4KCiAgPCEtLSBwb3Rpb24gLS0+CiAgPHJlY3QgeD0iOSIgeT0iMTAiIHdpZHRoPSIxNCIgaGVpZ2h0PSIxIiBmaWxsPSIjRDNGRjc1Ii8+CiAgPHJlY3QgeD0iNyIgeT0iMTEiIHdpZHRoPSIxOCIgaGVpZ2h0PSIyIiBmaWxsPSIjRDNGRjc1Ii8+CiAgPHJlY3QgeD0iNiIgeT0iMTMiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyIiBmaWxsPSIjRDNGRjc1Ii8+CgogIDwhLS0gcG90aW9uIGhpZ2hsaWdodHMgLS0+CiAgPHJlY3QgeD0iMTAiIHk9IjExIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIiBmaWxsPSIjRThGOEM2Ii8+CiAgPHJlY3QgeD0iMTgiIHk9IjEyIiB3aWR0aD0iMyIgaGVpZ2h0PSIxIiBmaWxsPSIjRThGOEM2Ii8+CgogIDwhLS0gZnJvbnQgbGlwIC0tPgogIDxyZWN0IHg9IjUiIHk9IjE1IiB3aWR0aD0iMjIiIGhlaWdodD0iMiIgZmlsbD0iIzE1MUQxNyIvPgogIDxyZWN0IHg9IjciIHk9IjE3IiB3aWR0aD0iMTgiIGhlaWdodD0iMSIgZmlsbD0iIzE1MUQxNyIvPgoKICA8IS0tIGNhdWxkcm9uIGJvZHkgLS0+CiAgPHJlY3QgeD0iNiIgeT0iMTciIHdpZHRoPSIyMCIgaGVpZ2h0PSI0IiBmaWxsPSIjMTUxRDE3Ii8+CiAgPHJlY3QgeD0iNyIgeT0iMjEiIHdpZHRoPSIxOCIgaGVpZ2h0PSIzIiBmaWxsPSIjMTUxRDE3Ii8+CiAgPHJlY3QgeD0iOSIgeT0iMjQiIHdpZHRoPSIxNCIgaGVpZ2h0PSIzIiBmaWxsPSIjMTUxRDE3Ii8+CiAgPHJlY3QgeD0iMTEiIHk9IjI3IiB3aWR0aD0iMTAiIGhlaWdodD0iMSIgZmlsbD0iIzE1MUQxNyIvPgoKICA8IS0tIHJlc3RyYWluZWQgYm9keSBoaWdobGlnaHQgLS0+CiAgPHJlY3QgeD0iOCIgeT0iMTgiIHdpZHRoPSI1IiBoZWlnaHQ9IjEiIGZpbGw9IiM1MjY0M0YiLz4KICA8cmVjdCB4PSI4IiB5PSIxOSIgd2lkdGg9IjMiIGhlaWdodD0iMyIgZmlsbD0iIzUyNjQzRiIvPgogIDxyZWN0IHg9IjEwIiB5PSIyMiIgd2lkdGg9IjQiIGhlaWdodD0iMSIgZmlsbD0iIzUyNjQzRiIvPgoKICA8IS0tIGZlZXQgLS0+CiAgPHJlY3QgeD0iOCIgeT0iMjYiIHdpZHRoPSI0IiBoZWlnaHQ9IjMiIGZpbGw9IiMxNTFEMTciLz4KICA8cmVjdCB4PSIyMCIgeT0iMjYiIHdpZHRoPSI0IiBoZWlnaHQ9IjMiIGZpbGw9IiMxNTFEMTciLz4KPC9zdmc+Cg=="
+    />
+    <title>package soup</title>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <a class="eyebrow" href="https://www.npmjs.com/" rel="noreferrer">
+            npm utility
+          </a>
+          <h1>package<span>soup</span></h1>
+          <p>
+            Drop in package references from lists, CSV, Markdown, or npm URLs.
+            Get clean, deduplicated output instantly.
+          </p>
+        </div>
+        <div class="offline-badge" title="No input leaves your browser">
+          <span aria-hidden="true"></span>
+          local &amp; synchronous
+        </div>
+      </header>
+
+      <section class="toolbar" aria-label="Formatter controls">
+        <div class="format-options">
+          <div class="format-control">
+            <label for="output-family">Output</label>
+            <select id="output-family">
+              <option value="text">Text</option>
+              <option value="json">JSON</option>
+              <option value="csv">CSV</option>
+              <option value="markdown">Markdown</option>
+              <option value="tarball">Tarball URLs</option>
+            </select>
+          </div>
+          <div class="format-control" id="grouping-control">
+            <label for="grouping">Grouping</label>
+            <select id="grouping">
+              <option value="consolidated">One row per package</option>
+              <option value="repeated">Repeat each specifier</option>
+            </select>
+          </div>
+          <div class="format-control">
+            <label for="specifier-mode">Package data</label>
+            <select id="specifier-mode">
+              <option value="include">Names + specifiers</option>
+              <option value="names-only">Package names only</option>
+            </select>
+          </div>
+          <div class="format-control" id="text-style-control">
+            <label for="text-style">Text syntax</label>
+            <select id="text-style">
+              <option value="columns">Package then versions</option>
+              <option value="attached">package@specifier</option>
+            </select>
+          </div>
+          <div class="format-control" id="record-separator-control">
+            <label for="record-separator">Records</label>
+            <select id="record-separator">
+              <option value="newline">New lines</option>
+              <option value="space">Spaces</option>
+            </select>
+          </div>
+          <div class="format-control" id="specifier-separator-control">
+            <label for="specifier-separator">Versions</label>
+            <select id="specifier-separator">
+              <option value="space">Spaces</option>
+              <option value="comma">Commas</option>
+            </select>
+          </div>
+          <fieldset class="filter-control" id="filter-control">
+            <legend>Include</legend>
+            <label>
+              <input id="filter-exact" type="checkbox" checked />
+              Exact versions
+            </label>
+            <label>
+              <input id="filter-ranges" type="checkbox" checked />
+              Semver ranges
+            </label>
+            <label>
+              <input id="filter-tags" type="checkbox" checked />
+              Dist-tags
+            </label>
+            <label>
+              <input id="filter-packages" type="checkbox" checked />
+              Package only
+            </label>
+          </fieldset>
+        </div>
+        <div class="summary" aria-live="polite">
+          <span><strong id="package-count">0</strong> packages</span>
+          <span><strong id="specifier-count">0</strong> specifiers</span>
+          <span class="summary-warning"
+            ><strong id="diagnostic-count">0</strong> issues</span
+          >
+        </div>
+        <button class="secondary-button" id="example-button" type="button">
+          Load example
+        </button>
+        <p class="format-note" id="format-note" hidden></p>
+      </section>
+
+      <section class="workspace">
+        <article class="panel input-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="step">01</span>
+              <h2>Source</h2>
+            </div>
+            <button class="text-button" id="clear-button" type="button">
+              Clear
+            </button>
+          </div>
+          <label class="sr-only" for="source">Package reference input</label>
+          <textarea
+            id="source"
+            spellcheck="false"
+            autocomplete="off"
+            placeholder="Paste package names, versions, CSV, Markdown, or npm URLs..."
+          ></textarea>
+          <div class="diagnostics" id="diagnostics" aria-live="polite"></div>
+        </article>
+
+        <article class="panel output-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="step">02</span>
+              <h2>Formatted output</h2>
+            </div>
+            <button class="copy-button" id="copy-button" type="button">
+              <span id="copy-label">Copy</span>
+            </button>
+          </div>
+          <pre id="output" tabindex="0" aria-label="Formatted output"></pre>
+          <p class="empty-output" id="empty-output">
+            Formatted output appears here.
+          </p>
+          <section class="excluded-output" id="excluded-output" hidden>
+            <div class="excluded-heading">
+              <h3>Excluded by filters</h3>
+              <span id="excluded-count">0</span>
+            </div>
+            <ul id="excluded-list"></ul>
+          </section>
+        </article>
+      </section>
+
+      <footer>
+        <p>
+          Nothing is uploaded. Parsing runs entirely in this browser with
+          <code>package-soup</code>.
+        </p>
+        <nav class="project-links" aria-label="Project links">
+          <a
+            href="https://github.com/reggi/package-soup"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub repository
+          </a>
+          <a
+            href="https://www.npmjs.com/package/package-soup"
+            target="_blank"
+            rel="noreferrer"
+          >
+            npm package
+          </a>
+        </nav>
+        <p class="storage-note" id="storage-note" hidden>
+          Browser storage is unavailable; page state will not persist.
+        </p>
+      </footer>
+    </main>
+
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

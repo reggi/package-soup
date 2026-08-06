@@ -1,0 +1,6 @@
+assets/
+.github/
+.release-please-manifest.json
+AGENTS.md
+release-please-config.json
+test/
